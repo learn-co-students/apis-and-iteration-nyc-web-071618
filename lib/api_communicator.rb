@@ -6,12 +6,23 @@ require 'pry'
 #   character_hash = JSON.parse(all_characters)
 #   binding.pry
 
+def get_api_results
+  i = 1
+  fullresults = []
+  9.times do
+    url = 'https://swapi.co/api/people/?page=' + i.to_s
+    all_char = RestClient.get(url)
+    char_hash = JSON.parse(all_char)
+    data = char_hash["results"]
+    fullresults.concat(data)
+    i+=1
+  end
+  fullresults
+end
+
 def get_character_movies_from_api(character)
-  #make the web request
-  all_char = RestClient.get('http://www.swapi.co/api/people/')
-  char_hash = JSON.parse(all_char)
-  char_data = char_hash["results"].find { |data|
-    data["name"].downcase == character.downcase
+  char_data = get_api_results.find { |data|
+    data["name"].downcase.include?(character.downcase)
   }
   film_urls = char_data["films"]
   film_data = film_urls.collect { |data|
@@ -28,6 +39,7 @@ def get_character_movies_from_api(character)
   # this collection will be the argument given to `parse_character_movies`
   #  and that method will do some nice presentation stuff: puts out a list
   #  of movies by title. play around with puts out other info about a given film.
+
 end
 
 def parse_character_movies(films_hash)
