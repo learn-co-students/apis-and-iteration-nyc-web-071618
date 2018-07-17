@@ -14,10 +14,24 @@ def get_character_movies_from_api(character)
   #  and that method will do some nice presentation stuff: puts out a list
   #  of movies by title. play around with puts out other info about a given film.
 
-  all_characters = RestClient.get('http://www.swapi.co/api/people/')
-  character_hash = JSON.parse(all_characters)
 
+  character_hash = combine_pages
 
+  film_api_array = get_character_films(character_hash, character)
+
+  get_movie_details_from_api(film_api_array)
+
+  # counter = 1
+  # character_hash = {}
+  # new_character_hash = {}
+  #
+  # until new_character_hash["next"] == nil && new_character_hash != {}
+  #   all_characters = RestClient.get("http://www.swapi.co/api/people/?page=#{counter}")
+  #   new_character_hash = JSON.parse(all_characters)
+  #   character_hash = character_hash.merge("page#{counter}": new_character_hash)
+  #
+  #   counter += 1
+  # end
   #
   # array_of_character_info = character_hash["results"]
   # desired_character_bio = array_of_character_info.select do |character_bio|
@@ -26,9 +40,6 @@ def get_character_movies_from_api(character)
   #
   # film_array = desired_character_bio[0]["films"]
 
-  film_api_array = get_character_films(character_hash, character)
-
-  get_movie_details_from_api(film_api_array)
 
   # all_films_array = []
   #
@@ -52,13 +63,31 @@ def get_character_movies_from_api(character)
 
 end
 
-def get_character_films(character_hash, character)
-  array_of_character_info = character_hash["results"]
-  desired_character_bio = array_of_character_info.select do |character_bio|
-    character_bio["name"].downcase == character
+def combine_pages
+  counter = 1
+  character_hash = {}
+  new_character_hash = {}
+
+  until new_character_hash["next"] == nil && new_character_hash != {}
+    all_characters = RestClient.get("http://www.swapi.co/api/people/?page=#{counter}")
+    new_character_hash = JSON.parse(all_characters)
+    character_hash = character_hash.merge("page#{counter}": new_character_hash)
+
+    counter += 1
   end
 
-  return desired_character_bio[0]["films"]
+  return character_hash
+end
+
+
+def get_character_films(character_hash, character)
+  character_hash.each do |page, info_hash|
+    info_hash["results"].each do |character_bio|
+      if character_bio["name"].downcase == character
+        return character_bio["films"]
+      end
+    end
+  end
 end
 
 
