@@ -19,7 +19,11 @@ def get_character_movies_from_api(character)
 
   film_api_array = get_character_films(character_hash, character)
 
-  get_movie_details_from_api(film_api_array)
+  if film_api_array != nil
+    get_movie_details_from_api(film_api_array)
+  else
+    return nil
+  end
 
   # counter = 1
   # character_hash = {}
@@ -88,6 +92,9 @@ def get_character_films(character_hash, character)
       end
     end
   end
+
+  puts "This character doesn't exist!"
+  return nil
 end
 
 
@@ -134,11 +141,15 @@ end
 
 def show_character_movies(character)
   films_array = get_character_movies_from_api(character)
-  puts ""
-  puts "#{character.split.map(&:capitalize).join(' ')} has been in the following movies:"
-  # the above "split" titlecases the character's name.
-  puts ""
-  parse_character_movies(films_array)
+  if films_array == nil
+    return nil
+  else
+    puts ""
+    puts "#{character.split.map(&:capitalize).join(' ')} has been in the following movies:"
+    # the above "split" titlecases the character's name.
+    puts ""
+    parse_character_movies(films_array)
+  end
 end
 
 ## BONUS
