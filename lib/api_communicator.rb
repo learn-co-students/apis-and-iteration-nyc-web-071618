@@ -5,25 +5,30 @@ require 'pry'
 # all_characters = RestClient.get('http://www.swapi.co/api/people/')
 #   character_hash = JSON.parse(all_characters)
 #   binding.pry
-
-def get_api_results
-  i = 1
-  fullresults = []
-  9.times do
-    url = 'https://swapi.co/api/people/?page=' + i.to_s
-    all_char = RestClient.get(url)
+@url =  'https://swapi.co/api/people/?page=1'
+def get_api_results(character)
+  # i = 1
+  # fullresults = []
+  # 9.times do
+    all_char = RestClient.get(@url)
     char_hash = JSON.parse(all_char)
     data = char_hash["results"]
-    fullresults.concat(data)
-    i+=1
-  end
-  fullresults
+    # fullresults.concat(data)
+    if data.find { |data| data["name"].downcase.include?(character.downcase)} == nil
+        @url = char_hash["next"]
+        get_api_results(character)
+      else
+        char_data = data.find { |data| data["name"].downcase.include?(character.downcase)}
+        get_character_movies_from_api(char_data)
+    end
+  # end
+  # fullresults
 end
 
-def get_character_movies_from_api(character)
-  char_data = get_api_results.find { |data|
-    data["name"].downcase.include?(character.downcase)
-  }
+def get_character_movies_from_api(char_data)
+  # char_data = get_api_results.find { |data|
+  #   data["name"].downcase.include?(character.downcase)
+  # }
   film_urls = char_data["films"]
   film_data = film_urls.collect { |data|
     JSON.parse(RestClient.get(data))
@@ -54,7 +59,7 @@ def parse_character_movies(films_hash)
 end
 
 def show_character_movies(character)
-  films_hash = get_character_movies_from_api(character)
+  films_hash = get_api_results(character)
   parse_character_movies(films_hash)
 end
 
