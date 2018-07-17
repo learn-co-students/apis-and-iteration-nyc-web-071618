@@ -32,10 +32,10 @@ end
 
 def parse_character_movies(films_hash)
   i = 1
-  films_hash.each do |movie, i|
+  films_hash.each do |movie|
     puts "#{i}. #{movie["title"]}"
     i+=1
-    
+
   end
   # some iteration magic and puts out the movies in a nice list
 
@@ -51,4 +51,4 @@ end
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
 # can you split it up into helper methods?
 
-get_character_movies_from_api('Luke Skywalker')
+# get_character_movies_from_api('Luke Skywalker')
