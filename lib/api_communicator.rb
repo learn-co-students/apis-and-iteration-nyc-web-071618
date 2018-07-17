@@ -19,11 +19,8 @@ def get_character_movies_from_api(character)
   character_hash["results"].find do |results|
     if results["name"] == character
       film_array = results["films"]
-      film_array.each do |film|
-
-        film_api = RestClient.get(film)
-        film_hash = JSON.parse(film_api)
-      end
+      film_array.map { |film| RestClient.get(film) }
+      binding.pry
     end
   end
   puts film_hash
