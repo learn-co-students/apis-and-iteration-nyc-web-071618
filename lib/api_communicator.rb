@@ -8,16 +8,17 @@ require 'pry'
 
 def get_character_movies_from_api(character)
   #make the web request
-  all_characters = RestClient.get('http://www.swapi.co/api/people/')
-  character_hash = JSON.parse(all_characters)
-  character_data = character_hash["results"].find { |data|
-    data["name"] == character
+  all_char = RestClient.get('http://www.swapi.co/api/people/')
+  char_hash = JSON.parse(all_char)
+  char_data = char_hash["results"].find { |data|
+    data["name"].downcase == character.downcase
   }
-  film_urls = character_data["films"]
+  film_urls = char_data["films"]
   film_data = film_urls.collect { |data|
     JSON.parse(RestClient.get(data))
   }
   film_data
+
   # iterate over the character hash to find the collection of `films` for the given
   #   `character`
   # collect those film API urls, make a web request to each URL to get the info
@@ -50,4 +51,4 @@ end
 # that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
 # can you split it up into helper methods?
 
-get_character_movies_from_api('Luke Skywalker')
+# get_character_movies_from_api('Luke Skywalker')
